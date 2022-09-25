@@ -22,6 +22,10 @@ export class ArticlesService {
     return { isFake: isFake, accuracy: accuracy };
   }
 
+  async findByURL(url: string) {
+    return await this.articlesRepository.findOneBy({ url });
+  }
+
   async process(url: string, title: string, content: string) {
     // here will call the endpoint from python BE
     // will call the create function with the received data

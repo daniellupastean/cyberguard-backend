@@ -11,7 +11,6 @@ export class ArticlesController {
     @Body('title') title: string,
     @Body('content') content: string,
   ) {
-    // add validations & throw errors here if neeeded
     return this.articlesService.process(url, title, content);
   }
 }
