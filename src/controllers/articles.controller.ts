@@ -11,6 +11,7 @@ import { ArticlesService } from '../services/articles.service';
 import { ApiTags } from '@nestjs/swagger/dist';
 import { ProcessArticleDto } from '../dtos/processArticle.dto';
 import { UpdateArticleDto } from '../dtos/updateArticle.dto';
+import { IdParam } from '../validators/idParam.validator';
 
 @ApiTags('articles')
 @Controller('articles')
@@ -32,14 +33,14 @@ export class ArticlesController {
   }
 
   @Get(':id')
-  async findById(@Param('id') id: string) {
-    return await this.articlesService.findById(id);
+  async findById(@Param() params: IdParam) {
+    return await this.articlesService.findById(params.id);
   }
 
   @Put(':id')
-  async updateById(@Param('id') id: string, @Body() data: UpdateArticleDto) {
+  async updateById(@Param() params: IdParam, @Body() data: UpdateArticleDto) {
     return await this.articlesService.updateById(
-      id,
+      params.id,
       data.url,
       data.isFake,
       data.accuracy,
@@ -47,7 +48,7 @@ export class ArticlesController {
   }
 
   @Delete(':id')
-  async deleteById(@Param('id') id: string) {
-    return await this.articlesService.deleteById(id);
+  async deleteById(@Param() params: IdParam) {
+    return await this.articlesService.deleteById(params.id);
   }
 }

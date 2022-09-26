@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { AppService } from '../services/app.service';
 import { ApiTags } from '@nestjs/swagger/dist';
 import { VerifyUrlDto } from '../dtos/verifyUrl.dto';
@@ -7,11 +7,6 @@ import { VerifyUrlDto } from '../dtos/verifyUrl.dto';
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
-
-  @Get()
-  getStatus(): string {
-    return 'Cyberguard API is ON';
-  }
 
   @Post('verifyURL')
   async verifyURL(@Body() data: VerifyUrlDto) {

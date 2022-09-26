@@ -10,6 +10,7 @@ import {
 import { SitesService } from '../services/sites.service';
 import { ApiTags } from '@nestjs/swagger/dist';
 import { CreateSiteDto } from '../dtos/createSite.dto';
+import { IdParam } from '../validators/idParam.validator';
 
 @ApiTags('sites')
 @Controller('sites')
@@ -22,8 +23,8 @@ export class SitesController {
   }
 
   @Get(':id')
-  async findById(@Param('id') id: string) {
-    return await this.sitesService.findById(id);
+  async findById(@Param() params: IdParam) {
+    return await this.sitesService.findById(params.id);
   }
 
   @Post()
@@ -32,13 +33,13 @@ export class SitesController {
   }
 
   @Put(':id')
-  async updateById(@Param('id') id: string, @Body() data: CreateSiteDto) {
-    return await this.sitesService.updateById(id, data.url, data.label);
+  async updateById(@Param() params: IdParam, @Body() data: CreateSiteDto) {
+    return await this.sitesService.updateById(params.id, data.url, data.label);
   }
 
   @Delete(':id')
-  async deleteById(@Param('id') id: string) {
-    return await this.sitesService.deleteById(id);
+  async deleteById(@Param() params: IdParam) {
+    return await this.sitesService.deleteById(params.id);
   }
 
   @Delete()
