@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AppController } from './controllers/app.controller';
+import { AppService } from './services/app.service';
 import { typeOrmConfig } from './orm.config';
 import { TypeOrmModule } from '@nestjs/typeorm/dist';
 import { SitesService } from './services/sites.service';
@@ -9,14 +9,23 @@ import { Site } from './entities/site.entity';
 import { Article } from './entities/article.entity';
 import { ArticlesController } from './controllers/articles.controller';
 import { ArticlesService } from './services/articles.service';
+import { Subscriber } from './entities/subscriber.entity';
+import { SubscribersController } from './controllers/subscribers.controller';
+import { SubscribersService } from './services/subscribers.service';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
     TypeOrmModule.forFeature([Site]),
     TypeOrmModule.forFeature([Article]),
+    TypeOrmModule.forFeature([Subscriber]),
   ],
-  controllers: [AppController, SitesController, ArticlesController],
-  providers: [AppService, SitesService, ArticlesService],
+  controllers: [
+    AppController,
+    SitesController,
+    ArticlesController,
+    SubscribersController,
+  ],
+  providers: [AppService, SitesService, ArticlesService, SubscribersService],
 })
 export class AppModule {}

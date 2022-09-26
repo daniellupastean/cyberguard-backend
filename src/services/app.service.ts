@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ArticlesService } from './services/articles.service';
-import { SitesService } from './services/sites.service';
+import { ArticlesService } from './articles.service';
+import { SitesService } from './sites.service';
 
 @Injectable()
 export class AppService {
