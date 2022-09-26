@@ -37,6 +37,8 @@ export class SubscribersService {
   }
 
   async deleteByEmail(email: string) {
+    const subscriber = await this.findByEmail(email);
+    if (!subscriber) return { message: 'Subscriber does not exist' };
     await this.subscribersRepository.delete({ email });
     return { message: 'Subscriber successfully deleted' };
   }

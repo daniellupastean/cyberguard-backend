@@ -1,21 +1,33 @@
-import { Controller, Post, Get, Put, Body, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Put,
+  Body,
+  Delete,
+  Param,
+} from '@nestjs/common';
 import { SubscribersService } from '../services/subscribers.service';
+import { ApiTags } from '@nestjs/swagger/dist';
+import { CreateSubscriberDto } from '../dtos/createSubscriber.dto';
+import { UpdateSubscriberDto } from '../dtos/updateSubscriber.dto';
 
+@ApiTags('subscribers')
 @Controller('subscribers')
 export class SubscribersController {
   constructor(private readonly subscribersService: SubscribersService) {}
 
   @Post()
-  async create(@Body('email') email: string) {
-    return await this.subscribersService.create(email);
+  async create(@Body() subscriberData: CreateSubscriberDto) {
+    return await this.subscribersService.create(subscriberData.email);
   }
 
-  @Put()
+  @Put(':email')
   async updateByEmail(
-    @Body('oldEmail') oldEmail: string,
-    @Body('newEmail') newEmail: string,
+    @Param('email') email: string,
+    @Body() data: UpdateSubscriberDto,
   ) {
-    return await this.subscribersService.updateByEmail(oldEmail, newEmail);
+    return await this.subscribersService.updateByEmail(email, data.newEmail);
   }
 
   @Get()
@@ -23,8 +35,8 @@ export class SubscribersController {
     return await this.subscribersService.findAll();
   }
 
-  @Delete()
-  async deleteByEmail(@Body('email') email: string) {
+  @Delete(':email')
+  async deleteByEmail(@Param('email') email: string) {
     return await this.subscribersService.deleteByEmail(email);
   }
 }

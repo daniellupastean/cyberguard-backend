@@ -22,8 +22,26 @@ export class ArticlesService {
     return { isFake: isFake, accuracy: accuracy };
   }
 
+  async updateById(id, url, isFake, accuracy) {
+    const article = await this.findById(id);
+    if (!article) return { message: 'Article not found' };
+    article.url = url;
+    article.is_fake = isFake;
+    article.accuracy = accuracy;
+    await this.articlesRepository.update(id, article);
+    return { message: 'Article updated successfully' };
+  }
+
   async findByURL(url: string) {
     return await this.articlesRepository.findOneBy({ url });
+  }
+
+  async findById(id: string) {
+    return await this.articlesRepository.findOneBy({ id });
+  }
+
+  async findAll() {
+    return await this.articlesRepository.find();
   }
 
   async process(url: string, title: string, content: string) {
@@ -35,5 +53,12 @@ export class ArticlesService {
     const accuracy = 79;
 
     return await this.create(url, isFake, accuracy);
+  }
+
+  async deleteById(id: string) {
+    const article = await this.findById(id);
+    if (!article) return { message: 'Article not found' };
+    await this.articlesRepository.delete(id);
+    return { message: 'Article successfully deleted' };
   }
 }
