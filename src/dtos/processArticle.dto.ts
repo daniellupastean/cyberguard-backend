@@ -13,8 +13,6 @@ export class ProcessArticleDto {
 
   @ApiProperty()
   @IsNotEmpty({ message: 'The article should have content' })
-  @Length(10, 10000, {
-    message: 'The content should be at least 10 characters long',
-  })
+  @Length(10)
   content: string;
 }
