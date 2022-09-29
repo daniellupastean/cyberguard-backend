@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { url } from 'inspector';
 import { Repository } from 'typeorm';
 import { Article } from '../entities/article.entity';
+
+const urlParser = require('url');
 
 @Injectable()
 export class ArticlesService {
@@ -10,10 +13,11 @@ export class ArticlesService {
     private readonly articlesRepository: Repository<Article>,
   ) {}
 
-  async create(url: string, isFake: boolean, accuracy: number) {
+  async create(url: string, isFake: boolean, accuracy: number, title: string) {
     // create article object
     const article = this.articlesRepository.create({
       url,
+      title,
       is_fake: isFake,
       accuracy,
     });
@@ -22,12 +26,13 @@ export class ArticlesService {
     return { isFake: isFake, accuracy: accuracy };
   }
 
-  async updateById(id, url, isFake, accuracy) {
+  async updateById(id, url, isFake, accuracy, title) {
     const article = await this.findById(id);
     if (!article) return { message: 'Article not found' };
     article.url = url;
     article.is_fake = isFake;
     article.accuracy = accuracy;
+    article.title = title;
     await this.articlesRepository.update(id, article);
     return { message: 'Article updated successfully' };
   }
@@ -53,14 +58,24 @@ export class ArticlesService {
   }
 
   async findTen() {
-    return await this.articlesRepository.find({ take: 10 });
+    const rawArticles = await this.articlesRepository.find({ take: 10 });
+    const mappedArticles = rawArticles.map((article) => {
+      const parsedURL = urlParser.parse(article.url, true);
+      return {
+        id: article.id,
+        title: article.title,
+        website: parsedURL.host,
+        url: article.url,
+        accuracy: article.accuracy,
+        isFake: article.is_fake,
+      };
+    });
+
+    return mappedArticles;
   }
 
   async process(url: string, title: string, content: string) {
     const fetch = require('node-fetch');
-    // here will call the endpoint from python BE
-    // will call the create function with the received data
-    // for now will use some dummy data
 
     const response = await fetch('http://54.229.94.228:8000/classify', {
       method: 'POST',
@@ -76,7 +91,7 @@ export class ArticlesService {
     const isFake = parsedResponse.prediction === 'fake' ? true : false;
     const accuracy = parseInt(parsedResponse.probability);
 
-    return await this.create(url, isFake, accuracy);
+    return await this.create(url, isFake, accuracy, title);
   }
 
   async deleteById(id: string) {

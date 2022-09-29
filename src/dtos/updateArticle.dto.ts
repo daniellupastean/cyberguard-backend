@@ -2,6 +2,7 @@ import {
   IsBoolean,
   IsNotEmpty,
   IsNumber,
+  IsString,
   IsUrl,
   Max,
   Min,
@@ -13,6 +14,11 @@ export class UpdateArticleDto {
   @IsNotEmpty()
   @IsUrl()
   url: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  title: string;
 
   @ApiProperty()
   @IsNotEmpty()

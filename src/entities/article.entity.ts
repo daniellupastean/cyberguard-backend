@@ -14,6 +14,9 @@ export class Article {
   @Column()
   url: string;
 
+  @Column({ nullable: true })
+  title: string;
+
   @Column()
   is_fake: boolean;
 

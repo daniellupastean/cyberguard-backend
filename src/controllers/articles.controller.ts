@@ -49,6 +49,7 @@ export class ArticlesController {
       data.url,
       data.isFake,
       data.accuracy,
+      data.title,
     );
   }
 
