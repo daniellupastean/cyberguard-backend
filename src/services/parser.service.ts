@@ -1,19 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { RankedSitesService } from './rankedSites.service';
 import * as puppeteer from 'puppeteer';
+import * as moment from 'moment';
+import { ArticlesService } from './articles.service';
+import { getRank } from '../utils/utils';
 
 const isWord = require('is-word');
 const englishWords = isWord('american-english');
 
 @Injectable()
 export class ParserService {
-  constructor(private readonly rankedSitesService: RankedSitesService) {}
+  constructor(
+    private readonly rankedSitesService: RankedSitesService,
+    private readonly articlesService: ArticlesService,
+  ) {}
 
   async parseRecentNews(news: string[]) {
+    let realPercentage = null;
     let slicedNews;
     let result = [];
     if (news.length > 10) slicedNews = news.slice(0, 10);
     else slicedNews = news;
+
+    const urlParser = await require('url');
+    const parsedURL = await urlParser.parse(slicedNews[0], true);
+    const siteURL = parsedURL.protocol + '//' + parsedURL.host;
+    const rankedSite = await this.rankedSitesService.findByURL(siteURL);
+    // search in DB if this website was ranked in the last week
+    if (rankedSite && moment().diff(rankedSite.updated_at, 'days') <= 7)
+      return getRank(rankedSite.real_percentage);
 
     if (slicedNews)
       try {
@@ -70,23 +85,36 @@ export class ParserService {
           result.push(pageData);
           await page.close();
         }
-        console.log(result);
-        //work with result, call Damian API
         await browser.close();
       } catch (err) {
         console.log(err);
       }
     result = result.map((pageData) => {
       let newPageData = { ...pageData };
-      newPageData.content = newPageData.content
-        .replaceAll('}', ' ')
-        .replaceAll('{', ' ')
-        .split(' ')
-        .filter((word: string): boolean => englishWords.check(word))
-        .join(' ');
+      if (
+        newPageData.content.includes('}') ||
+        newPageData.content.includes('{')
+      )
+        newPageData.content = newPageData.content
+          .replaceAll('}', ' ')
+          .replaceAll('{', ' ')
+          .split(' ')
+          .filter((word: string): boolean => englishWords.check(word))
+          .join(' ');
       return newPageData;
     });
 
-    return 'rank';
+    let reals = 0;
+    for (let i = 0; i < result.length; i++) {
+      const processedResult = await this.articlesService.process(
+        result[i].url,
+        result[i].title,
+        result[i].content,
+      );
+      if (processedResult && !processedResult.isFake) reals++;
+    }
+    realPercentage = (reals * 100) / result.length;
+    await this.rankedSitesService.create(siteURL, realPercentage);
+    return getRank(realPercentage);
   }
 }
