@@ -32,6 +32,11 @@ export class ArticlesController {
     return await this.articlesService.findAll();
   }
 
+  @Get('10')
+  async findTen() {
+    return await this.articlesService.findTen();
+  }
+
   @Get(':id')
   async findById(@Param() params: IdParam) {
     return await this.articlesService.findById(params.id);
