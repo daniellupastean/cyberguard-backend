@@ -36,6 +36,14 @@ export class ArticlesService {
     return await this.articlesRepository.findOneBy({ url });
   }
 
+  async findByIsFake(isFake: boolean) {
+    return await this.articlesRepository.find({
+      where: {
+        is_fake: isFake,
+      },
+    });
+  }
+
   async findById(id: string) {
     return await this.articlesRepository.findOneBy({ id });
   }

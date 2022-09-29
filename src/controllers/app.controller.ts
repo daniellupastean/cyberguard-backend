@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body } from '@nestjs/common';
 import { AppService } from '../services/app.service';
 import { ApiTags } from '@nestjs/swagger/dist';
 import { VerifyUrlDto } from '../dtos/verifyUrl.dto';
@@ -21,5 +21,10 @@ export class AppController {
   async parseRecentNews(@Body() data) {
     // this endpoint process the last 20 articles from a certain website to calculate a rank
     return await this.parserService.parseRecentNews(data.news);
+  }
+
+  @Get('dashboardInfo')
+  async getDashboardInfo() {
+    return await this.appService.getDashboardInfo();
   }
 }

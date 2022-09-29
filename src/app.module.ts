@@ -12,6 +12,9 @@ import { ArticlesService } from './services/articles.service';
 import { Subscriber } from './entities/subscriber.entity';
 import { SubscribersController } from './controllers/subscribers.controller';
 import { SubscribersService } from './services/subscribers.service';
+import { RankedSite } from './entities/rankedSite.entity';
+import { RankedSitesService } from './services/rankedSites.service';
+import { ParserService } from './services/parser.service';
 
 @Module({
   imports: [
@@ -19,6 +22,7 @@ import { SubscribersService } from './services/subscribers.service';
     TypeOrmModule.forFeature([Site]),
     TypeOrmModule.forFeature([Article]),
     TypeOrmModule.forFeature([Subscriber]),
+    TypeOrmModule.forFeature([RankedSite]),
   ],
   controllers: [
     AppController,
@@ -26,6 +30,13 @@ import { SubscribersService } from './services/subscribers.service';
     ArticlesController,
     SubscribersController,
   ],
-  providers: [AppService, SitesService, ArticlesService, SubscribersService],
+  providers: [
+    AppService,
+    SitesService,
+    ArticlesService,
+    SubscribersService,
+    RankedSitesService,
+    ParserService,
+  ],
 })
 export class AppModule {}
