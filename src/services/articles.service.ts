@@ -3,7 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { url } from 'inspector';
 import { Repository } from 'typeorm';
 import { Article } from '../entities/article.entity';
+import * as puppeteer from 'puppeteer';
 
+const isWord = require('is-word');
+const englishWords = isWord('american-english');
 const urlParser = require('url');
 
 @Injectable()
@@ -92,6 +95,80 @@ export class ArticlesService {
     const accuracy = parseInt(parsedResponse.probability);
 
     return await this.create(url, isFake, accuracy, title);
+  }
+
+  async parse(articleUrl: string) {
+    let pageData = null;
+
+    const existingArticle = await this.findByURL(articleUrl);
+    if (existingArticle)
+      return {
+        isFake: existingArticle.is_fake,
+        accuracy: existingArticle.accuracy,
+      };
+    try {
+      const browser = await puppeteer.launch({
+        headless: false,
+        slowMo: 100,
+        devtools: false,
+      });
+      const page = await browser.newPage();
+      await page.setDefaultNavigationTimeout(0);
+      await Promise.all([page.goto(articleUrl), page.waitForNavigation()]);
+      pageData = await page.evaluate((url: string) => {
+        const getValidContent = (text: string): string => {
+          const textData = text?.replace(/\s{2,}/g, ' ').trim();
+          return textData;
+        };
+
+        const pageDetails = {
+          url: url,
+          title: '',
+          content: '',
+        };
+        let content = '';
+        const title = document
+          .getElementsByTagName('h1')[0]
+          .textContent?.trim();
+        const pageElements = document.getElementsByTagName('DIV');
+        for (let i = 0; i < pageElements.length; i++) {
+          if (
+            pageElements[i].tagName === 'SECTION' ||
+            pageElements[i].classList.value.includes('article')
+          ) {
+            const contentNews = getValidContent(pageElements[i]?.textContent);
+            if (content.length < contentNews.length) content = contentNews;
+          }
+        }
+        if (content === '') {
+          const articles = document.getElementsByTagName('ARTICLE');
+          for (let j = 0; j < articles.length; j++) {
+            const contentNews = getValidContent(articles[j]?.textContent);
+            if (content.length < contentNews.length) content = contentNews;
+          }
+        }
+        pageDetails.title = title;
+        pageDetails.content = content;
+        return pageDetails;
+      }, articleUrl);
+      await page.close();
+      await browser.close();
+    } catch (err) {
+      console.log(err);
+    }
+
+    let newPageData = { ...pageData };
+
+    newPageData.content = newPageData.content
+      .split(' ')
+      .filter((word: string): boolean => englishWords.check(word))
+      .join(' ');
+
+    return await this.process(
+      newPageData.url,
+      newPageData.title,
+      newPageData.content,
+    );
   }
 
   async deleteById(id: string) {

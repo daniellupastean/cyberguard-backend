@@ -27,6 +27,11 @@ export class ArticlesController {
     );
   }
 
+  @Post('parse')
+  async parse(@Body('url') url: string) {
+    return await this.articlesService.parse(url);
+  }
+
   @Get()
   async findAll() {
     return await this.articlesService.findAll();

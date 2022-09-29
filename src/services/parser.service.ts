@@ -91,16 +91,10 @@ export class ParserService {
       }
     result = result.map((pageData) => {
       let newPageData = { ...pageData };
-      if (
-        newPageData.content.includes('}') ||
-        newPageData.content.includes('{')
-      )
-        newPageData.content = newPageData.content
-          .replaceAll('}', ' ')
-          .replaceAll('{', ' ')
-          .split(' ')
-          .filter((word: string): boolean => englishWords.check(word))
-          .join(' ');
+      newPageData.content = newPageData.content
+        .split(' ')
+        .filter((word: string): boolean => englishWords.check(word))
+        .join(' ');
       return newPageData;
     });
 
