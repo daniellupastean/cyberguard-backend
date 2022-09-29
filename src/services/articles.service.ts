@@ -73,8 +73,6 @@ export class ArticlesService {
     });
 
     const parsedResponse = await response.json();
-    console.log(parsedResponse);
-
     const isFake = parsedResponse.prediction === 'fake' ? true : false;
     const accuracy = parseInt(parsedResponse.probability);
 
