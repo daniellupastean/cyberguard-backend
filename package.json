@@ -30,6 +30,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "handlebars": "^4.7.7",
+    "is-word": "^1.0.4",
     "pg": "^8.8.0",
     "puppeteer": "^18.0.5",
     "reflect-metadata": "^0.1.13",
