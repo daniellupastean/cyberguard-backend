@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { RankedSitesService } from './rankedSites.service';
 import * as puppeteer from 'puppeteer';
 
-const enRegex = require('./en-regex');
-
 const isWord = require('is-word');
 const englishWords = isWord('american-english');
 
@@ -17,18 +15,21 @@ export class ParserService {
     if (news.length > 10) slicedNews = news.slice(0, 10);
     else slicedNews = news;
 
-    try {
-      const browser = await puppeteer.launch({
-        headless: false,
-        slowMo: 100,
-        devtools: false,
-      });
-      for (let i = 0; i < slicedNews.length; i++) {
-        const page = await browser.newPage();
-        await page.setDefaultNavigationTimeout(0);
-        await Promise.all([page.goto(slicedNews[i]), page.waitForNavigation()]);
-        const pageData = await page.evaluate(
-          (url: string) => {
+    if (slicedNews)
+      try {
+        const browser = await puppeteer.launch({
+          headless: false,
+          slowMo: 100,
+          devtools: false,
+        });
+        for (let i = 0; i < slicedNews.length; i++) {
+          const page = await browser.newPage();
+          await page.setDefaultNavigationTimeout(0);
+          await Promise.all([
+            page.goto(slicedNews[i]),
+            page.waitForNavigation(),
+          ]);
+          const pageData = await page.evaluate((url: string) => {
             const getValidContent = (text: string): string => {
               const textData = text?.replace(/\s{2,}/g, ' ').trim();
               return textData;
@@ -65,19 +66,16 @@ export class ParserService {
             pageDetails.title = title;
             pageDetails.content = content;
             return pageDetails;
-          },
-          slicedNews[i],
-          enRegex,
-        );
-        result.push(pageData);
-        await page.close();
+          }, slicedNews[i]);
+          result.push(pageData);
+          await page.close();
+        }
+        console.log(result);
+        //work with result, call Damian API
+        await browser.close();
+      } catch (err) {
+        console.log(err);
       }
-      console.log(result);
-      //work with result, call Damian API
-      await browser.close();
-    } catch (err) {
-      console.log(err);
-    }
     result = result.map((pageData) => {
       let newPageData = { ...pageData };
       newPageData.content = newPageData.content
@@ -85,9 +83,10 @@ export class ParserService {
         .replaceAll('{', ' ')
         .split(' ')
         .filter((word: string): boolean => englishWords.check(word))
-        .join(' ')
+        .join(' ');
       return newPageData;
     });
+
     return 'rank';
   }
 }
