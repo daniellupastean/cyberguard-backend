@@ -19,6 +19,7 @@ import { EmailsService } from './services/emails.service';
 import { EmailsController } from './controllers/emails.controller';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { mailConfig } from './mail.config';
+import { RankedSitesController } from './controllers/rankedSites.controller';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { mailConfig } from './mail.config';
     ArticlesController,
     SubscribersController,
     EmailsController,
+    RankedSitesController,
   ],
   providers: [
     AppService,
