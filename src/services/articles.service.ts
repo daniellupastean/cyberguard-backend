@@ -52,13 +52,31 @@ export class ArticlesService {
     return await this.articlesRepository.find();
   }
 
+  async findTen() {
+    return await this.articlesRepository.find({ take: 10 });
+  }
+
   async process(url: string, title: string, content: string) {
+    const fetch = require('node-fetch');
     // here will call the endpoint from python BE
     // will call the create function with the received data
     // for now will use some dummy data
 
-    const isFake = true;
-    const accuracy = 79;
+    const response = await fetch('http://54.229.94.228:8000/classify', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        title: title,
+      }),
+    });
+
+    const parsedResponse = await response.json();
+    console.log(parsedResponse);
+
+    const isFake = parsedResponse.prediction === 'fake' ? true : false;
+    const accuracy = parseInt(parsedResponse.probability);
 
     return await this.create(url, isFake, accuracy);
   }
