@@ -78,6 +78,12 @@ export class ArticlesService {
   }
 
   async process(url: string, title: string, content: string) {
+    const existingArticle = await this.findByURL(url);
+    if (existingArticle)
+      return {
+        isFake: existingArticle.is_fake,
+        accuracy: existingArticle.accuracy,
+      };
     const fetch = require('node-fetch');
 
     const response = await fetch('http://54.229.94.228:8000/classify', {
