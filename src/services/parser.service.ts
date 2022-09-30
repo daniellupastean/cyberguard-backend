@@ -36,6 +36,7 @@ export class ParserService {
           headless: false,
           slowMo: 100,
           devtools: false,
+          args: ['--no-sandbox'],
         });
         for (let i = 0; i < slicedNews.length; i++) {
           const page = await browser.newPage();
