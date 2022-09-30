@@ -14,9 +14,8 @@ export class Site {
   @Column()
   url: string;
 
-  // maybe use an enum instead: the values should be "fake" and "satire"
   @Column()
-  label: string; // fake/satire
+  label: string;
 
   @CreateDateColumn()
   created_at: Date;

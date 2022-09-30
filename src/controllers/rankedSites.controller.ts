@@ -7,7 +7,6 @@ import {
   Delete,
   Param,
 } from '@nestjs/common';
-import { SitesService } from '../services/sites.service';
 import { ApiTags } from '@nestjs/swagger/dist';
 import { CreateSiteDto } from '../dtos/createSite.dto';
 import { IdParam } from '../validators/idParam.validator';

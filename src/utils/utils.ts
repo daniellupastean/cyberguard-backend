@@ -1,3 +1,5 @@
+const urlParser = require('url');
+
 export function getRank(realPercentage: number) {
   let rankName = null;
   let rankNumber = null;
@@ -18,4 +20,10 @@ export function getRank(realPercentage: number) {
     rankNumber = 5;
   }
   return { rankName, rankNumber };
+}
+
+export function getSiteUrl(fullUrl: string) {
+  const parsedURL = urlParser.parse(fullUrl, true);
+  const siteURL = parsedURL.protocol + '//' + parsedURL.host;
+  return siteURL;
 }

@@ -19,7 +19,6 @@ export class AppController {
 
   @Post('parseRecentNews')
   async parseRecentNews(@Body() data) {
-    // this endpoint process the last 20 articles from a certain website to calculate a rank
     return await this.parserService.parseRecentNews(data.news);
   }
 

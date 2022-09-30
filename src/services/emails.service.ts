@@ -9,13 +9,21 @@ export class EmailsService {
     private readonly subscribersService: SubscribersService,
   ) {}
 
-  async sendNewsletter(email, content) {
-    await this.mailerService.sendMail({
-      to: email,
-      subject: 'CyberGuard Newsletter',
-      text: content,
+  async sendNewsletter(content: string) {
+    const promiseArray = [];
+    const subscribers = await this.subscribersService.findAll();
+    subscribers.forEach((subscriber) => {
+      promiseArray.push(
+        this.mailerService.sendMail({
+          to: subscriber.email,
+          subject: 'CyberGuard Newsletter',
+          text: content,
+        }),
+      );
     });
 
-    return { message: `We have emailed the newsletter to "${email}"` };
+    await Promise.all(promiseArray);
+
+    return { message: `Newsletter sent to all subscribers` };
   }
 }

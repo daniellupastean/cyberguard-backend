@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { url } from 'inspector';
 import { Repository } from 'typeorm';
 import { Article } from '../entities/article.entity';
 import * as puppeteer from 'puppeteer';
@@ -16,20 +15,31 @@ export class ArticlesService {
     private readonly articlesRepository: Repository<Article>,
   ) {}
 
-  async create(url: string, isFake: boolean, accuracy: number, title: string) {
-    // create article object
+  async create(
+    url: string,
+    isFake: boolean,
+    accuracy: number,
+    title: string,
+    content: string,
+  ) {
     const article = this.articlesRepository.create({
       url,
       title,
       is_fake: isFake,
       accuracy,
+      content,
     });
-    // add article in DB
     await this.articlesRepository.save(article);
-    return { isFake: isFake, accuracy: accuracy };
+    return { isFake, accuracy, title, url, content };
   }
 
-  async updateById(id, url, isFake, accuracy, title) {
+  async updateById(
+    id: string,
+    url: string,
+    isFake: boolean,
+    accuracy: number,
+    title: string,
+  ) {
     const article = await this.findById(id);
     if (!article) return { message: 'Article not found' };
     article.url = url;
@@ -81,6 +91,9 @@ export class ArticlesService {
     const existingArticle = await this.findByURL(url);
     if (existingArticle)
       return {
+        title: title,
+        url: url,
+        content: content,
         isFake: existingArticle.is_fake,
         accuracy: existingArticle.accuracy,
       };
@@ -100,7 +113,7 @@ export class ArticlesService {
     const isFake = parsedResponse.prediction === 'fake' ? true : false;
     const accuracy = parseInt(parsedResponse.probability);
 
-    return await this.create(url, isFake, accuracy, title);
+    return await this.create(url, isFake, accuracy, title, content);
   }
 
   async parse(articleUrl: string) {
@@ -174,18 +187,11 @@ export class ArticlesService {
       .filter((word: string): boolean => englishWords.check(word))
       .join(' ');
 
-    const partialResult = await this.process(
+    return await this.process(
       newPageData.url,
       newPageData.title,
       newPageData.content,
     );
-
-    return {
-      ...partialResult,
-      url: newPageData.url,
-      title: newPageData.title,
-      content: newPageData.content,
-    };
   }
 
   async deleteById(id: string) {

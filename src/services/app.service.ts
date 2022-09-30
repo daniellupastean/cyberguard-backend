@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { getSiteUrl } from '../utils/utils';
 import { ArticlesService } from './articles.service';
 import { RankedSitesService } from './rankedSites.service';
 import { SitesService } from './sites.service';
@@ -11,13 +12,9 @@ export class AppService {
     private readonly articlesService: ArticlesService,
     private readonly rankedSitesService: RankedSitesService,
     private readonly subscribersService: SubscribersService,
-    private readonly parserService: ArticlesService,
   ) {}
   async verifyURL(url: string) {
-    const urlParser = await require('url');
-    const parsedURL = await urlParser.parse(url, true);
-    const siteURL = parsedURL.protocol + '//' + parsedURL.host;
-    const site = await this.sitesService.findByURL(siteURL);
+    const site = await this.sitesService.findByURL(getSiteUrl(url));
     if (site) return { message: `This website is known as as ${site.label}` };
     const article = await this.articlesService.findByURL(url);
     if (article)

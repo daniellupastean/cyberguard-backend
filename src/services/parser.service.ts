@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { RankedSitesService } from './rankedSites.service';
+import { ArticlesService } from './articles.service';
 import * as puppeteer from 'puppeteer';
 import * as moment from 'moment';
-import { ArticlesService } from './articles.service';
 import { getRank } from '../utils/utils';
 
 const isWord = require('is-word');
@@ -19,6 +19,7 @@ export class ParserService {
     let realPercentage = null;
     let slicedNews;
     let result = [];
+    console.log(news);
     if (news.length > 10) slicedNews = news.slice(0, 10);
     else slicedNews = news;
 
