@@ -111,6 +111,9 @@ export class ArticlesService {
       return {
         isFake: existingArticle.is_fake,
         accuracy: existingArticle.accuracy,
+        url: existingArticle.url,
+        title: existingArticle.title,
+        content: existingArticle.content,
       };
     try {
       const browser = await puppeteer.launch({
@@ -171,11 +174,18 @@ export class ArticlesService {
       .filter((word: string): boolean => englishWords.check(word))
       .join(' ');
 
-    return await this.process(
+    const partialResult = await this.process(
       newPageData.url,
       newPageData.title,
       newPageData.content,
     );
+
+    return {
+      ...partialResult,
+      url: newPageData.url,
+      title: newPageData.title,
+      content: newPageData.content,
+    };
   }
 
   async deleteById(id: string) {

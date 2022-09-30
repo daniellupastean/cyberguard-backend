@@ -17,6 +17,9 @@ export class Article {
   @Column({ nullable: true })
   title: string;
 
+  @Column({ nullable: true })
+  content: string;
+
   @Column()
   is_fake: boolean;
 
