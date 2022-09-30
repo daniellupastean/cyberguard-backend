@@ -117,6 +117,7 @@ export class ArticlesService {
         headless: false,
         slowMo: 100,
         devtools: false,
+        args: ['--no-sandbox'],
       });
       const page = await browser.newPage();
       await page.setDefaultNavigationTimeout(0);
