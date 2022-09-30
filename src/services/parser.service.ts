@@ -20,7 +20,7 @@ export class ParserService {
     let slicedNews;
     let result = [];
     console.log(news);
-    if (news.length > 10) slicedNews = news.slice(0, 10);
+    if (news.length > 5) slicedNews = news.slice(0, 5);
     else slicedNews = news;
 
     const urlParser = await require('url');
