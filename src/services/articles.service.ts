@@ -111,7 +111,7 @@ export class ArticlesService {
 
     const parsedResponse = await response.json();
     const isFake = parsedResponse.prediction === 'fake' ? true : false;
-    const accuracy = parseInt(parsedResponse.probability);
+    const accuracy = parseFloat(parsedResponse.probability);
 
     return await this.create(url, isFake, accuracy, title, content);
   }

@@ -11,6 +11,7 @@ import { ApiTags } from '@nestjs/swagger/dist';
 import { CreateSiteDto } from '../dtos/createSite.dto';
 import { IdParam } from '../validators/idParam.validator';
 import { RankedSitesService } from '../services/rankedSites.service';
+import { getRank } from '../utils/utils';
 
 @ApiTags('ranked sites')
 @Controller('rankedSites')
@@ -29,7 +30,10 @@ export class RankedSitesController {
 
   @Post('checkUrl')
   async findByURL(@Body('url') url: string) {
-    return await this.rankedSitesService.findByURL(url);
+    const rankedSite = await this.rankedSitesService.findByURL(url);
+    if (!rankedSite) return null;
+
+    return getRank(rankedSite.real_percentage);
   }
 
   @Put(':id')
