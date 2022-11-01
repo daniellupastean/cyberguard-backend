@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body, Headers } from '@nestjs/common';
 import { AppService } from '../services/app.service';
 import { ApiTags } from '@nestjs/swagger/dist';
 import { VerifyUrlDto } from '../dtos/verifyUrl.dto';
@@ -23,7 +23,9 @@ export class AppController {
   }
 
   @Post('process-image')
-  async processImage(@Body() base64Image) {
+  async processImage(@Headers() headers, @Body() base64Image) {
+    console.log(JSON.stringify('HEADERS', headers));
+    console.log(JSON.stringify('BODY', base64Image));
     return 'banana';
   }
 
