@@ -22,6 +22,11 @@ export class AppController {
     return await this.parserService.parseRecentNews(data.news);
   }
 
+  @Post('process-image')
+  async processImage(@Body() base64Image) {
+    return 'banana';
+  }
+
   @Get('dashboardInfo')
   async getDashboardInfo() {
     return await this.appService.getDashboardInfo();
