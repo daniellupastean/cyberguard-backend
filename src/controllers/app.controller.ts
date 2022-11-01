@@ -24,8 +24,8 @@ export class AppController {
 
   @Post('process-image')
   async processImage(@Headers() headers, @Body() base64Image) {
-    console.log(JSON.stringify('HEADERS', headers));
-    console.log(JSON.stringify('BODY', base64Image));
+    console.log('HEADERS', JSON.stringify(headers));
+    console.log('BODY', JSON.stringify(base64Image));
     return 'banana';
   }
 
