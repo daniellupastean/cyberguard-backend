@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body, Headers } from '@nestjs/common';
 import { AppService } from '../services/app.service';
 import { ApiTags } from '@nestjs/swagger/dist';
 import { VerifyUrlDto } from '../dtos/verifyUrl.dto';
@@ -20,6 +20,13 @@ export class AppController {
   @Post('parseRecentNews')
   async parseRecentNews(@Body() data) {
     return await this.parserService.parseRecentNews(data.news);
+  }
+
+  @Post('process-image')
+  async processImage(@Headers() headers, @Body() base64Image) {
+    console.log('HEADERS', JSON.stringify(headers));
+    console.log('BODY', JSON.stringify(base64Image));
+    return 'banana';
   }
 
   @Get('dashboardInfo')
