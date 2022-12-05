@@ -20,12 +20,21 @@ import { EmailsController } from './controllers/emails.controller';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { mailConfig } from './mail.config';
 import { RankedSitesController } from './controllers/rankedSites.controller';
+import { APP_GUARD } from '@nestjs/core';
+import {
+  KeycloakConnectModule,
+  ResourceGuard,
+  RoleGuard,
+  AuthGuard,
+} from 'nest-keycloak-connect';
 import { ContactController } from './controllers/contact.controller';
 import { ContactService } from './services/contact.service';
 import { ContactMessage } from './entities/contact-message.entity';
+import { keycloakConfig } from './keycloak.config';
 
 @Module({
   imports: [
+    // KeycloakConnectModule.register(keycloakConfig),
     TypeOrmModule.forRoot(typeOrmConfig),
     TypeOrmModule.forFeature([Site]),
     TypeOrmModule.forFeature([Article]),
@@ -52,6 +61,18 @@ import { ContactMessage } from './entities/contact-message.entity';
     ParserService,
     EmailsService,
     ContactService,
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthGuard,
+    // },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ResourceGuard,
+    // },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: RoleGuard,
+    // },
   ],
 })
 export class AppModule {}

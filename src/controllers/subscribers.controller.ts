@@ -12,6 +12,7 @@ import { ApiTags } from '@nestjs/swagger/dist';
 import { CreateSubscriberDto } from '../dtos/createSubscriber.dto';
 import { UpdateSubscriberDto } from '../dtos/updateSubscriber.dto';
 import { EmailParam } from '../validators/emailParam.validator';
+import { Roles } from 'nest-keycloak-connect';
 
 @ApiTags('subscribers')
 @Controller('subscribers')
@@ -34,6 +35,7 @@ export class SubscribersController {
     );
   }
 
+  // @Roles({ roles: ['admin'] })
   @Get()
   async findAll() {
     return await this.subscribersService.findAll();
