@@ -20,6 +20,9 @@ import { EmailsController } from './controllers/emails.controller';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { mailConfig } from './mail.config';
 import { RankedSitesController } from './controllers/rankedSites.controller';
+import { ContactController } from './controllers/contact.controller';
+import { ContactService } from './services/contact.service';
+import { ContactMessage } from './entities/contact-message.entity';
 
 @Module({
   imports: [
@@ -28,6 +31,7 @@ import { RankedSitesController } from './controllers/rankedSites.controller';
     TypeOrmModule.forFeature([Article]),
     TypeOrmModule.forFeature([Subscriber]),
     TypeOrmModule.forFeature([RankedSite]),
+    TypeOrmModule.forFeature([ContactMessage]),
     MailerModule.forRoot(mailConfig),
   ],
   controllers: [
@@ -37,6 +41,7 @@ import { RankedSitesController } from './controllers/rankedSites.controller';
     SubscribersController,
     EmailsController,
     RankedSitesController,
+    ContactController,
   ],
   providers: [
     AppService,
@@ -46,6 +51,7 @@ import { RankedSitesController } from './controllers/rankedSites.controller';
     RankedSitesService,
     ParserService,
     EmailsService,
+    ContactService,
   ],
 })
 export class AppModule {}
