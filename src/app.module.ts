@@ -31,6 +31,7 @@ import { ContactController } from './controllers/contact.controller';
 import { ContactService } from './services/contact.service';
 import { ContactMessage } from './entities/contact-message.entity';
 import { keycloakConfig } from './keycloak.config';
+import { DashboardController } from './controllers/dashboard.controller';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { keycloakConfig } from './keycloak.config';
     EmailsController,
     RankedSitesController,
     ContactController,
+    DashboardController,
   ],
   providers: [
     AppService,

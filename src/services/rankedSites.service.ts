@@ -42,6 +42,24 @@ export class RankedSitesService {
     return await this.rankedSitesRepository.find();
   }
 
+  async findTop5Trusted() {
+    return await this.rankedSitesRepository.find({
+      order: {
+        real_percentage: 'DESC',
+      },
+      take: 5,
+    });
+  }
+
+  async findTop5Vulnerable() {
+    return await this.rankedSitesRepository.find({
+      order: {
+        real_percentage: 'ASC',
+      },
+      take: 5,
+    });
+  }
+
   async findAllByRealPercentage(realPercentage) {
     return await this.rankedSitesRepository.find({
       where: {
