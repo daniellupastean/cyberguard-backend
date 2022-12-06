@@ -58,4 +58,4 @@ jobs:
           app-name: 'cyberguard-api'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CF24D4D40BE446628D0DE2A8CFCA679E }}
-          package: .
+          package: release.zip
