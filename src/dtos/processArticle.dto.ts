@@ -3,16 +3,16 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ProcessArticleDto {
   @ApiProperty()
-  @IsNotEmpty({ message: 'The article should have a URL' })
+  @IsNotEmpty()
   @IsUrl()
   url: string;
 
   @ApiProperty()
-  @IsNotEmpty({ message: 'The article should have a title' })
+  @IsNotEmpty()
   title: string;
 
   @ApiProperty()
-  @IsNotEmpty({ message: 'The article should have content' })
+  @IsNotEmpty()
   @Length(10)
   content: string;
 }
