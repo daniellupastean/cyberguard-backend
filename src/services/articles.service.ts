@@ -99,7 +99,7 @@ export class ArticlesService {
       };
     const fetch = require('node-fetch');
 
-    const response = await fetch('http://54.229.94.228:8000/classify-news', {
+    const response = await fetch('http://54.229.94.228:8000/classify-news/', {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
