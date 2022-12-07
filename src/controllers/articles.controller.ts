@@ -20,10 +20,12 @@ export class ArticlesController {
 
   @Post()
   async process(@Body() articleData: ProcessArticleDto) {
+    console.log(articleData);
     return await this.articlesService.process(
       articleData.url,
       articleData.title,
       articleData.content,
+      articleData.language,
     );
   }
 

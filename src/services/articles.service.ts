@@ -2,7 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Article } from '../entities/article.entity';
+import translate from 'translate';
 import * as puppeteer from 'puppeteer';
+import { TranslateService } from './translate.service';
 
 const isWord = require('is-word');
 const englishWords = isWord('american-english');
@@ -13,6 +15,7 @@ export class ArticlesService {
   constructor(
     @InjectRepository(Article)
     private readonly articlesRepository: Repository<Article>,
+    private readonly translateService: TranslateService,
   ) {}
 
   async create(
@@ -87,7 +90,12 @@ export class ArticlesService {
     return mappedArticles;
   }
 
-  async process(url: string, title: string, content: string) {
+  async process(
+    url: string,
+    title: string,
+    content: string,
+    language: string = 'en',
+  ) {
     const existingArticle = await this.findByURL(url);
     if (existingArticle)
       return {
@@ -99,14 +107,25 @@ export class ArticlesService {
       };
     const fetch = require('node-fetch');
 
+    let mlTitle = title;
+    let mlContent = content;
+
+    if (language !== 'en') {
+      mlTitle = await this.translateService.deeplTranslate(title, language);
+      mlContent = await this.translateService.deeplTranslate(content, language);
+    }
+
+    console.log('ML Title: ' + mlTitle);
+    console.log('ML Content: ' + mlContent);
+
     const response = await fetch('http://54.229.94.228:8000/classify-news/', {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
       },
       body: JSON.stringify({
-        title: title,
-        body: content,
+        title: mlTitle,
+        body: mlContent,
       }),
     });
 

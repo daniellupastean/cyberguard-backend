@@ -3,6 +3,7 @@ import { AppService } from '../services/app.service';
 import { ApiTags } from '@nestjs/swagger/dist';
 import { VerifyUrlDto } from '../dtos/verifyUrl.dto';
 import { ParserService } from '../services/parser.service';
+import { TranslateService } from '../services/translate.service';
 
 @ApiTags('app')
 @Controller()
@@ -10,6 +11,7 @@ export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly parserService: ParserService,
+    private readonly translateService: TranslateService,
   ) {}
 
   @Post('verifyURL')
@@ -25,5 +27,29 @@ export class AppController {
   @Get('dashboardInfo')
   async getDashboardInfo() {
     return await this.appService.getDashboardInfo();
+  }
+
+  @Post('deepl-translate')
+  async translate(@Body() data) {
+    return await this.translateService.deeplTranslate(data.text, data.language);
+  }
+
+  @Post('phishing-detection')
+  async phishingDetection(@Body('url') url) {
+    const fetch = require('node-fetch');
+    const response = await fetch('http://54.229.94.228:8000/classify-url/', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        url,
+      }),
+    });
+
+    const parsedResponse = await response.json();
+    const isPhishing = parsedResponse.phishing;
+
+    return { isPhishing };
   }
 }

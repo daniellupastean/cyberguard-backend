@@ -32,6 +32,7 @@ import { ContactService } from './services/contact.service';
 import { ContactMessage } from './entities/contact-message.entity';
 import { keycloakConfig } from './keycloak.config';
 import { DashboardController } from './controllers/dashboard.controller';
+import { TranslateService } from './services/translate.service';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { DashboardController } from './controllers/dashboard.controller';
     ParserService,
     EmailsService,
     ContactService,
+    TranslateService,
     // {
     //   provide: APP_GUARD,
     //   useClass: AuthGuard,

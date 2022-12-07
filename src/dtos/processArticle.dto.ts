@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsUrl, Length } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Length,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ProcessArticleDto {
@@ -15,4 +21,9 @@ export class ProcessArticleDto {
   @IsNotEmpty()
   @Length(10)
   content: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  language: string;
 }
