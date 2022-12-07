@@ -37,7 +37,7 @@ export class AppController {
   @Post('phishing-detection')
   async phishingDetection(@Body('url') url) {
     const fetch = require('node-fetch');
-    const response = await fetch('http://54.229.94.228:8000/classify-url/', {
+    const response = await fetch(process.env.ML_PHISHING_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',

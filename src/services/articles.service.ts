@@ -96,6 +96,8 @@ export class ArticlesService {
     content: string,
     language: string = 'en',
   ) {
+    content = content.replace(/\s\s+/g, ' ');
+
     const existingArticle = await this.findByURL(url);
     if (existingArticle)
       return {
@@ -105,6 +107,7 @@ export class ArticlesService {
         isFake: existingArticle.is_fake,
         accuracy: existingArticle.accuracy,
       };
+
     const fetch = require('node-fetch');
 
     let mlTitle = title;
@@ -118,7 +121,7 @@ export class ArticlesService {
     console.log('ML Title: ' + mlTitle);
     console.log('ML Content: ' + mlContent);
 
-    const response = await fetch('http://54.229.94.228:8000/classify-news/', {
+    const response = await fetch(process.env.ML_FAKE_NEWS_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
@@ -206,6 +209,8 @@ export class ArticlesService {
       .split(' ')
       .filter((word: string): boolean => englishWords.check(word))
       .join(' ');
+
+    console.log('content: ' + newPageData.content);
 
     return await this.process(
       newPageData.url,
