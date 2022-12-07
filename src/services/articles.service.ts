@@ -152,11 +152,8 @@ export class ArticlesService {
         content: existingArticle.content,
       };
     try {
-      const browser = await puppeteer.launch({
-        headless: true,
+      const browser = await puppeteer.connect({
         slowMo: 100,
-        devtools: false,
-        args: ['--no-sandbox'],
       });
       const page = await browser.newPage();
       await page.setDefaultNavigationTimeout(0);
