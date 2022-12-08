@@ -4,6 +4,7 @@ import { ApiTags } from '@nestjs/swagger/dist';
 import { VerifyUrlDto } from '../dtos/verifyUrl.dto';
 import { ParserService } from '../services/parser.service';
 import { TranslateService } from '../services/translate.service';
+import { PhishingService } from '../services/phishing.service';
 
 @ApiTags('app')
 @Controller()
@@ -12,19 +13,20 @@ export class AppController {
     private readonly appService: AppService,
     private readonly parserService: ParserService,
     private readonly translateService: TranslateService,
+    private readonly phishingService: PhishingService,
   ) {}
 
-  @Post('verifyURL')
+  @Post('verify-url')
   async verifyURL(@Body() data: VerifyUrlDto) {
     return await this.appService.verifyURL(data.url);
   }
 
-  @Post('parseRecentNews')
+  @Post('parse-recent-news')
   async parseRecentNews(@Body() data) {
     return await this.parserService.parseRecentNews(data.news);
   }
 
-  @Get('dashboardInfo')
+  @Get('dashboard-info')
   async getDashboardInfo() {
     return await this.appService.getDashboardInfo();
   }
@@ -32,24 +34,5 @@ export class AppController {
   @Post('deepl-translate')
   async translate(@Body() data) {
     return await this.translateService.deeplTranslate(data.text, data.language);
-  }
-
-  @Post('phishing-detection')
-  async phishingDetection(@Body('url') url) {
-    const fetch = require('node-fetch');
-    const response = await fetch(process.env.ML_PHISHING_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        url,
-      }),
-    });
-
-    const parsedResponse = await response.json();
-    const isPhishing = parsedResponse.phishing;
-
-    return { isPhishing };
   }
 }

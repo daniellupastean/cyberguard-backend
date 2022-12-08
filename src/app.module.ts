@@ -33,6 +33,9 @@ import { ContactMessage } from './entities/contact-message.entity';
 import { keycloakConfig } from './keycloak.config';
 import { DashboardController } from './controllers/dashboard.controller';
 import { TranslateService } from './services/translate.service';
+import { ClassifiedDomain } from './entities/classified-domains.entity';
+import { PhishingController } from './controllers/phishing.controller';
+import { PhishingService } from './services/phishing.service';
 
 @Module({
   imports: [
@@ -43,6 +46,7 @@ import { TranslateService } from './services/translate.service';
     TypeOrmModule.forFeature([Subscriber]),
     TypeOrmModule.forFeature([RankedSite]),
     TypeOrmModule.forFeature([ContactMessage]),
+    TypeOrmModule.forFeature([ClassifiedDomain]),
     MailerModule.forRoot(mailConfig),
   ],
   controllers: [
@@ -54,6 +58,7 @@ import { TranslateService } from './services/translate.service';
     RankedSitesController,
     ContactController,
     DashboardController,
+    PhishingController,
   ],
   providers: [
     AppService,
@@ -65,6 +70,7 @@ import { TranslateService } from './services/translate.service';
     EmailsService,
     ContactService,
     TranslateService,
+    PhishingService,
     // {
     //   provide: APP_GUARD,
     //   useClass: AuthGuard,
