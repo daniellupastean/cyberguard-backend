@@ -33,8 +33,10 @@ export class ParserService {
 
     if (slicedNews)
       try {
-        const browser = await puppeteer.connect({
+        const browser = await puppeteer.launch({
+          headless: true,
           slowMo: 100,
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
         });
         for (let i = 0; i < slicedNews.length; i++) {
           const page = await browser.newPage();

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Article } from '../entities/article.entity';
 import translate from 'translate';
-import * as puppeteer from 'puppeteer';
+import * as puppeteer from 'puppeteer-core';
 import { TranslateService } from './translate.service';
 
 const isWord = require('is-word');
@@ -152,9 +152,12 @@ export class ArticlesService {
         content: existingArticle.content,
       };
     try {
-      const browser = await puppeteer.connect({
+      const browser = await puppeteer.launch({
+        headless: true,
         slowMo: 100,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
       });
+
       const page = await browser.newPage();
       await page.setDefaultNavigationTimeout(0);
       await Promise.all([page.goto(articleUrl), page.waitForNavigation()]);
@@ -173,6 +176,8 @@ export class ArticlesService {
         const title = document
           .getElementsByTagName('h1')[0]
           .textContent?.trim();
+
+        console.log('Title: ' + title);
         const pageElements = document.getElementsByTagName('DIV');
         for (let i = 0; i < pageElements.length; i++) {
           if (
@@ -201,14 +206,7 @@ export class ArticlesService {
     }
 
     let newPageData = { ...pageData };
-
-    newPageData.content = newPageData.content
-      .split(' ')
-      .filter((word: string): boolean => englishWords.check(word))
-      .join(' ');
-
-    console.log('content: ' + newPageData.content);
-
+    console.log('content ', newPageData.content);
     return await this.process(
       newPageData.url,
       newPageData.title,
