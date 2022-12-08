@@ -18,7 +18,7 @@ export class ParserService {
   async parseRecentNews(news: string[]) {
     let realPercentage = null;
     let slicedNews;
-    let result = [];
+    const result = [];
     console.log(news);
     if (news.length > 5) slicedNews = news.slice(0, 5);
     else slicedNews = news;
@@ -33,7 +33,8 @@ export class ParserService {
 
     if (slicedNews)
       try {
-        const browser = await puppeteer.connect({
+        const browser = await puppeteer.launch({
+          headless: true,
           slowMo: 100,
         });
         for (let i = 0; i < slicedNews.length; i++) {
@@ -57,7 +58,7 @@ export class ParserService {
             let content = '';
             const title = document
               .getElementsByTagName('h1')[0]
-              .textContent?.trim();
+              ?.textContent?.trim();
             const pageElements = document.getElementsByTagName('DIV');
             for (let i = 0; i < pageElements.length; i++) {
               if (
@@ -88,14 +89,16 @@ export class ParserService {
       } catch (err) {
         console.log(err);
       }
-    result = result.map((pageData) => {
-      let newPageData = { ...pageData };
-      newPageData.content = newPageData.content
-        .split(' ')
-        .filter((word: string): boolean => englishWords.check(word))
-        .join(' ');
-      return newPageData;
-    });
+    // result = result.map((pageData) => {
+    //   let newPageData = { ...pageData };
+    //   newPageData.content = newPageData.content
+    //     .split(' ')
+    //     .filter((word: string): boolean => englishWords.check(word))
+    //     .join(' ');
+    //   return newPageData;
+    // });
+
+    console.log(result);
 
     let reals = 0;
     for (let i = 0; i < result.length; i++) {

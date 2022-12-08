@@ -90,13 +90,8 @@ export class ArticlesService {
     return mappedArticles;
   }
 
-  async process(
-    url: string,
-    title: string,
-    content: string,
-    language: string = 'en',
-  ) {
-    content = content.replace(/\s\s+/g, ' ');
+  async process(url: string, title: string, content: string, language = 'en') {
+    content = content?.replace(/\s\s+/g, ' ');
 
     const existingArticle = await this.findByURL(url);
     if (existingArticle)
@@ -120,23 +115,24 @@ export class ArticlesService {
 
     console.log('ML Title: ' + mlTitle);
     console.log('ML Content: ' + mlContent);
+    if (mlTitle && mlContent) {
+      const response = await fetch(process.env.ML_FAKE_NEWS_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: mlTitle,
+          body: mlContent,
+        }),
+      });
 
-    const response = await fetch(process.env.ML_FAKE_NEWS_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        title: mlTitle,
-        body: mlContent,
-      }),
-    });
+      const parsedResponse = await response.json();
+      const isFake = parsedResponse.prediction === 'fake' ? true : false;
+      const accuracy = Math.trunc(parseFloat(parsedResponse.probability));
 
-    const parsedResponse = await response.json();
-    const isFake = parsedResponse.prediction === 'fake' ? true : false;
-    const accuracy = Math.trunc(parseFloat(parsedResponse.probability));
-
-    return await this.create(url, isFake, accuracy, title, content);
+      return await this.create(url, isFake, accuracy, title, content);
+    }
   }
 
   async parse(articleUrl: string) {
@@ -152,7 +148,8 @@ export class ArticlesService {
         content: existingArticle.content,
       };
     try {
-      const browser = await puppeteer.connect({
+      const browser = await puppeteer.launch({
+        headless: true,
         slowMo: 100,
       });
       const page = await browser.newPage();
@@ -172,7 +169,7 @@ export class ArticlesService {
         let content = '';
         const title = document
           .getElementsByTagName('h1')[0]
-          .textContent?.trim();
+          ?.textContent?.trim();
         const pageElements = document.getElementsByTagName('DIV');
         for (let i = 0; i < pageElements.length; i++) {
           if (
@@ -200,10 +197,10 @@ export class ArticlesService {
       console.log(err);
     }
 
-    let newPageData = { ...pageData };
+    const newPageData = { ...pageData };
 
-    newPageData.content = newPageData.content
-      .split(' ')
+    newPageData.content = newPageData?.content
+      ?.split(' ')
       .filter((word: string): boolean => englishWords.check(word))
       .join(' ');
 
