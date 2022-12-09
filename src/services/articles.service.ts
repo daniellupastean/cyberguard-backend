@@ -2,12 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Article } from '../entities/article.entity';
-import translate from 'translate';
-import * as puppeteer from 'puppeteer-core';
+import * as puppeteer from 'puppeteer';
 import { TranslateService } from './translate.service';
 
-const isWord = require('is-word');
-const englishWords = isWord('american-english');
 const urlParser = require('url');
 
 @Injectable()
@@ -145,7 +142,7 @@ export class ArticlesService {
         accuracy: existingArticle.accuracy,
         url: existingArticle.url,
         title: existingArticle.title,
-        content: existingArticle.content,
+        content: existingArticle.content.slice(0, 300),
       };
     try {
       const browser = await puppeteer.launch({
@@ -206,7 +203,7 @@ export class ArticlesService {
     return await this.process(
       newPageData.url,
       newPageData.title,
-      newPageData.content,
+      newPageData.content.slice(0, 300),
     );
   }
 

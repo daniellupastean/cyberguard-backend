@@ -27,15 +27,18 @@ import {
   RoleGuard,
   AuthGuard,
 } from 'nest-keycloak-connect';
+import { keycloakConfig } from './keycloak.config';
 import { ContactController } from './controllers/contact.controller';
 import { ContactService } from './services/contact.service';
 import { ContactMessage } from './entities/contact-message.entity';
-import { keycloakConfig } from './keycloak.config';
 import { DashboardController } from './controllers/dashboard.controller';
 import { TranslateService } from './services/translate.service';
 import { ClassifiedDomain } from './entities/classified-domains.entity';
 import { PhishingController } from './controllers/phishing.controller';
 import { PhishingService } from './services/phishing.service';
+import { UserProfile } from './entities/user-profile.entity';
+import { UserProfilesController } from './controllers/user-profiles.controller';
+import { UserProfilesService } from './services/user-profiles.service';
 
 @Module({
   imports: [
@@ -47,6 +50,7 @@ import { PhishingService } from './services/phishing.service';
     TypeOrmModule.forFeature([RankedSite]),
     TypeOrmModule.forFeature([ContactMessage]),
     TypeOrmModule.forFeature([ClassifiedDomain]),
+    TypeOrmModule.forFeature([UserProfile]),
     MailerModule.forRoot(mailConfig),
   ],
   controllers: [
@@ -59,6 +63,7 @@ import { PhishingService } from './services/phishing.service';
     ContactController,
     DashboardController,
     PhishingController,
+    UserProfilesController,
   ],
   providers: [
     AppService,
@@ -71,6 +76,7 @@ import { PhishingService } from './services/phishing.service';
     ContactService,
     TranslateService,
     PhishingService,
+    UserProfilesService,
     // {
     //   provide: APP_GUARD,
     //   useClass: AuthGuard,
