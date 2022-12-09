@@ -4,6 +4,7 @@ import { ArticlesService } from './articles.service';
 import * as puppeteer from 'puppeteer';
 import * as moment from 'moment';
 import { getRank } from '../utils/utils';
+import { parse } from 'path';
 
 const isWord = require('is-word');
 const englishWords = isWord('american-english');
@@ -14,6 +15,73 @@ export class ParserService {
     private readonly rankedSitesService: RankedSitesService,
     private readonly articlesService: ArticlesService,
   ) {}
+
+  async getArticleUrls(siteUrl: string) {
+    let urls = [];
+    try {
+      const browser = await puppeteer.launch({
+        headless: true,
+        slowMo: 100,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      });
+      const page = await browser.newPage();
+      // await page.setDefaultNavigationTimeout(0);
+      await page.goto(siteUrl);
+      const getUrls = async () => {
+        return await page.evaluate(() => {
+          const arrayLinksData = [];
+          const mapLinks = new Map();
+          const arrayLinksItems = document.links;
+          for (let i = 0; i < arrayLinksItems.length; i++)
+            !arrayLinksData.includes(arrayLinksItems[i].href) &&
+              arrayLinksData.push(arrayLinksItems[i].href);
+          for (let i = 0; i < arrayLinksData.length; i++) {
+            const baseLink = arrayLinksData[i].split('/')[2];
+            if (mapLinks.has(baseLink))
+              mapLinks.set(baseLink, mapLinks.get(baseLink) + 1);
+            else mapLinks.set(baseLink, 1);
+          }
+          const [mostCommon] = mapLinks.keys();
+          const filteredLinks = arrayLinksData
+            .sort((a, b) => b.length - a.length)
+            .filter(
+              (link) => link.includes(mostCommon) && !link.includes('video'),
+            )
+            .slice(0, 5);
+          return filteredLinks;
+        });
+      };
+      urls = await getUrls();
+
+      await page.close();
+      await browser.close();
+    } catch (err) {
+      console.log(err);
+    }
+
+    return urls;
+  }
+
+  async parseAll() {
+    const arrayLinksData = [];
+    const mapLinks = new Map();
+    const arrayLinksItems = document.links;
+    for (let i = 0; i < arrayLinksItems.length; i++)
+      !arrayLinksData.includes(arrayLinksItems[i].href) &&
+        arrayLinksData.push(arrayLinksItems[i].href);
+    for (let i = 0; i < arrayLinksData.length; i++) {
+      const baseLink = arrayLinksData[i].split('/')[2];
+      if (mapLinks.has(baseLink))
+        mapLinks.set(baseLink, mapLinks.get(baseLink) + 1);
+      else mapLinks.set(baseLink, 1);
+    }
+    const [mostCommon] = mapLinks.keys();
+    const filteredLinks = arrayLinksData
+      .sort((a, b) => b.length - a.length)
+      .filter((link) => link.includes(mostCommon) && !link.includes('video'))
+      .slice(0, 5);
+    return filteredLinks;
+  }
 
   async parseRecentNews(news: string[]) {
     let realPercentage = null;
